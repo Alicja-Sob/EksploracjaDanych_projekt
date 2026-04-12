@@ -1,0 +1,141 @@
+\documentclass[12pt, a4paper]{report}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx,wrapfig, lipsum}
+\usepackage{a4wide}
+\usepackage{titlesec}
+\usepackage[T1]{fontenc}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage[cache=false]{minted}
+\usepackage{listings}
+\usepackage{amsmath} 
+\usepackage{amssymb}
+\usepackage{xurl}
+\usepackage{chngcntr}
+
+\counterwithin{figure}{section}
+\makeatletter
+\renewcommand{\thefigure}{\thesection\arabic{figure}}
+
+\usemintedstyle{autumn}
+
+\newcommand {\R}{\mathbb{R}}
+\newcommand {\C}{\mathbb{C}}
+\newcommand {\N}{\mathbb{N}}
+
+\geometry{
+    left = 25mm,
+    right = 25mm,
+    top = 25mm,
+    bottom = 30mm
+}
+
+\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.}
+
+\titleformat*{\section}{\LARGE\bfseries}
+\renewcommand{\figurename}{Rys}
+\setlength{\intextsep}{2cm}
+\setlength{\textfloatsep}{0cm}
+
+\begin{document}
+\title{
+  \Huge \textbf{Eksploracja Danych - projekt no.1} 
+  \\ \vspace{10pt} 
+  \LARGE  Pokemon- Weedle's Cave
+}
+
+\author{Alicja Sobiech, 188861\\
+Nikolai Lavrinov, 201302\\
+Maciej Łukasiewicz, 197865}
+
+
+\maketitle
+
+% ----------------------------------- SPIS TRESCI ----------------------------------
+
+\tableofcontents
+
+% ---------------------------------------------------------------------------------
+% PAPER ITSELF --------------------------------------------------------------------
+% ---------------------------------------------------------------------------------
+
+\newpage
+\addcontentsline{toc}{part}{Sprawozdanie}
+
+% okreslenie celu eksploracji i kryteriow sukcesu
+\section{Cel eksploracji} 
+
+Celem eksploracji jest ....
+
+\section{Zbiór danych}
+
+% Ogólny opis zbioru danych
+Zbiór danych zawiera ....
+
+\subsection{Charakterystyka zbioru danych}
+\begin{itemize}
+    \item \textbf{Pochodzenie}\\ 
+    \url{https://www.kaggle.com/datasets/terminus7/pokemon-challenge}
+    
+    \item \textbf{Format}\\
+    
+    \item \textbf{Liczba przykładów}\\
+    
+    \item \textbf{Ilość zbiorów danych}\\ 
+
+\end{itemize}
+
+\subsection{Opis atrybutów}
+% opis atrybutow (nazwy, typy - nominalne/numeryczne, co oznaczaja, co oznaczaja wartosci - jednostka miary, wartosci specjalne)
+
+\renewcommand{\figurename}{Tabela.}
+\begin{adjustbox}{center, caption={table description etc},nofloat=figure,vspace=\bigskipamount}
+% PLACE FOR A TABLE
+\end{adjustbox}
+
+\section{Eksploracyjna Analiza Danych}
+
+\subsection{Wstępne ustalenia dotyczące zawartości zbioru}
+
+\subsection{Wyniki eksploracyjnej analizy danych}
+
+\subsubsection{Wyniki analizy danych a cel eksploracji}
+
+\subsubsection{Rozkłady wartości atrybutów}
+\subsubsection{Korelacja pomiędzy wartościami atrybutów}
+
+
+\subsection{Uwagi na temat jakości danych}
+\subsubsection{Dane brakujące}
+\subsubsection{Punkty oddalone}
+\subsubsection{Dane niespójne}
+\subsubsection{Dane niezrozumiałe}
+
+\section{Podsumowanie}
+
+
+% ---------------------------------------------------------------------------------
+% SOURCES -------------------------------------------------------------------------
+% ---------------------------------------------------------------------------------
+\newpage
+\addcontentsline{toc}{part}{Źródła}
+
+\addcontentsline{toc}{section}{Wykaz Literatury}
+
+\section*{Wykaz Literatury}
+\renewcommand{\labelenumi}{[\arabic{enumi}]}
+\begin{enumerate}
+\item 
+
+\end{enumerate}
+
+
+\end{document}
