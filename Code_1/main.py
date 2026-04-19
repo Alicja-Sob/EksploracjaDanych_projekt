@@ -40,7 +40,7 @@ def histograms(csv_file, attribute):
     #plt.show()
     folder = "../Report_1/1_distribution"
     os.makedirs(folder, exist_ok=True)
-    plt.savefig(f"{folder}/{attribute.replace(" ", "_")}_hist.png")
+    plt.savefig(f"{folder}/{attribute.replace(" ", "_").replace(".","")}_hist.png")
 
 
 def distribution_generation(csv_file):
@@ -57,7 +57,7 @@ def main():
     pokemon_csv = pd.read_csv('../Dataset/pokemon.csv')
     tests_csv = pd.read_csv('../Dataset/tests.csv')
 
-    #distribution_generation(pokemon_csv)
+    distribution_generation(pokemon_csv)
 
 if __name__=="__main__":
     main()
