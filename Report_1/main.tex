@@ -81,7 +81,7 @@ Maciej Łukasiewicz, 197865}
 
 Celem eksploracji jest budowa modelu pozwalającego na predykcję wyników walk pokemonów na podstawie przypisanym im statystyk. Docelowo rozwiązywanym problemem będzie \textbf{klasyfikacja binarna}. Dodatkowym celem jest określenie, które statystyki mają największy wpływ na rezultat pojedynków.\\\\
 \noindent
-W przypadku tego problemu najistotniejszą metryką będzie dokładność [ang. \textit{accuracy}], informująca nas o tym, jak dobrze nasz model klasyfikuje walki, bez względu na ich wynik. Dokładność opisana jest poniższym wzorem\textsuperscript{[3]}:
+W przypadku tego problemu najistotniejszą metryką będzie dokładność [ang. \textit{accuracy}], informująca nas o tym, jak dobrze nasz model klasyfikuje walki, bez względu na ich wynik. Dokładność opisana jest poniższym wzorem\textsuperscript{[4]}:
 \[\text{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}\]
 gdzie:
 \begin{itemize}
@@ -92,7 +92,7 @@ gdzie:
 \end{itemize}
 
 \noindent
-Do oceny jakości modelu wykorzystujemy dodatkowo metrykę F1-score będącą średnią harmoniczną precyzji [ang. \textit{precision}] i czułości [ang. \textit{recall}]. Pozwala ona na bardziej zrównoważoną ocenę modelu, szczególnie gdy zależy nam na unikaniu zarówno błędów fałszywie pozytywnych jak i fałszywie negatywnych. F1-score wyznaczamy za pomocą poniższego wzoru\textsuperscript{[4]}:
+Do oceny jakości modelu wykorzystujemy dodatkowo metrykę F1-score będącą średnią harmoniczną precyzji [ang. \textit{precision}] i czułości [ang. \textit{recall}]. Pozwala ona na bardziej zrównoważoną ocenę modelu, szczególnie gdy zależy nam na unikaniu zarówno błędów fałszywie pozytywnych jak i fałszywie negatywnych. F1-score wyznaczamy za pomocą poniższego wzoru\textsuperscript{[5]}:
 \[F_1 = \frac{2}{\text{recall}^{-1} + \text{precision}^{-1]}}=2\frac{\text{precision} \cdot \text{recall}}{\text{precision}+\text{recall}}=\frac{2TP}{2TP+FP+FN}\]
 \noindent
 gdzie:
@@ -399,22 +399,40 @@ Speed            &
     \item Rozkład atrybutu \mintinline{text}{Generation} jest w dużym przybliżeniu równomierny — każda generacja ma podobną liczbę przynależących do niej pokemonów.
     \item Przynależność do wyższej generacji nie wydaje się mieć istotnego wpływu na rozkład statystyk pokemonów — rozkłady statystyk nie wykazują przesunięcia w kierunku wyższych wartości ani zwiększonej liczby obserwacji ekstremalnych.
     \item Atrybuty \mintinline{text}{Type 1} i \mintinline{text}{Type 2} przyjmują po 18 unikalnych wartości (nie wliczając w to wartości brakujących). W przypadku \mintinline{text}{Type 1} najczęstszy jest typ Water (112 pokemonów), jednak różnice między typami nie są dramatyczne. Dla \mintinline{text}{Type 2} dominuje Flying (97 pokemonów), przy czym blisko połowa pokemonów nie ma przypisanego drugiego typu ataku.
-    \item Rozkłady atrybutów numerycznych (HP, Attack, Defense, Sp. Atk, Sp. Def, Speed) są prawoskośne — większość pokemonów ma niskie lub średnie wartości statystyk, natomiast nieliczne pokemony osiągają wartości ekstremalne, tworząc długi prawy ogon rozkładów.
+    \item Rozkłady atrybutów numerycznych (HP, Attack, Defense, Sp. Atk, Sp. Def, Speed) są prawoskośne [ang. \textit{positive skew}] — większość pokemonów ma niskie lub średnie wartości statystyk, natomiast nieliczne pokemony osiągają wartości ekstremalne, tworząc długi prawy ogon rozkładów.
 \end{itemize}
 
+\newpage
 \subsubsection*{Dodatkowe potwierdzenie prawoskośności rozkładów statystyk}
 
-TODO!!!!!!!!!!!
+Mimo iż skośność rozkładu atrybutów numerycznych można stosunkowo łatwo ocenić na podstawie histogramów, zdecydowaliśmy się potwierdzić te obserwacje za pomocą prostych miar statystycznych - porównania relacji między średnią (\(\bar x\)) i medianą (\(M\)) oraz skośności nieparametrycznej (\(S\)). Zastosowane przez nas metody nie należą do najbardziej precyzyjnych, jednak ze względu na ich intuicyjność oraz brak założeń dotyczących rozkładu danych, uznaliśmy je za wystarczające.\\\\
+\noindent
+Pierwszą wykorzystaną metodą jest porównanie wartości Mediany i średniej poszczególnych atrybutów. W rozkładach prawoskośnych zazwyczaj zachodzi relacja \(\bar x > M\) - tj. średnia powinna być większa od mediany.\\\\
+\noindent
+Drugą wykorzystaną metodą jest skośność nieparametryczna (\(S\)). Metoda ta nie zawsze zgadza się z przyjmowaną dzisiaj definicją skośności, ale jest wystarczająco zbliżona dla naszych potrzeb. Dla rozkładów prawoskośnych miara ta powinna przyjmować wartości dodatnie (\(>0\)). Do jej obliczenia potrzebujemy średniej (\(\bar x\)), mediany (\(M\)) i odchylenia standardowego (\(\sigma\)) i wykorzystujemy wzór \textsuperscript{[7]}:
+\[S = \frac{\bar x - M}{\sigma}\]
 
-%testy statystyczne - dodatkowe potwierdzenie prawo skosnosci?? (STATISTICAL TEST FOR PRAWOSKOŚNOŚĆ??????)
-% check srednia > mediana > dominata ?
-% sprawdzenie ze nie jest to rozklad normalny???
+\noindent
+W tabeli 3.3 poniżej zebraliśmy wyniki opisanych powyżej testów dla atrybutów numerycznych zbioru \mintinline{text}{pokemon}. Wyniki te wyraźnie potwierdzają zaobserwowaną na wykresach prawoskośność wszystkich badanych rozkładów - średnia wartość każdego atrybutu jest większa od wartości jego mediany, a wszystkie obliczone skośności nieparametryczne są dodatnie.
 
-% https://pogotowiestatystyczne.pl/slowniki/skosnosc/
-% https://pogotowiestatystyczne.pl/slowniki/test-shapiro-wilka/
+\begin{adjustbox}{center, captionabove={Weryfikacja prawoskośności rozkładów statystyk},nofloat=figure,vspace=\bigskipamount}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Atrybut} & \(\mathbf{\bar x}\) & \(\mathbf{M}\) & \(\mathbf{\sigma}\) & \(\mathbf{\bar x\ ?\ M}\) & \(\mathbf{S}\) \\ \hline
+HP               & 69.26            & 65.00            & 25.53                                                                     & \textgreater{}             & 0.1668                                                                        \\ \hline
+Attack           & 79.00            & 75.00            & 32.46                                                                     & \textgreater{}             & 0.1233                                                                        \\ \hline
+Defense          & 73.84            & 70.00            & 31.18                                                                     & \textgreater{}             & 0.1232                                                                        \\ \hline
+Sp. Atk          & 72.82            & 65.00            & 32.72                                                                     & \textgreater{}             & 0.2390                                                                        \\ \hline
+Sp. Def          & 71.90            & 70.00            & 27.83                                                                     & \textgreater{}             & 0.0684                                                                        \\ \hline
+Speed            & 68.28            & 65.00            & 29.06                                                                     & \textgreater{}             & 0.1128                                                                        \\ \hline
+\end{tabular}
+\end{adjustbox}
+
 
 \subsubsection{Korelacja pomiędzy wartościami atrybutów}
-W celu zbadania, które statystyki mają największy wpływ na wynik walk, obliczono macierz korelacji (Pearsona) pomiędzy atrybutami numerycznymi zbioru \mintinline{text}{pokemon} a współczynnikiem zwycięstw (\textit{Win Rate}) wyznaczonym na podstawie zbioru \mintinline{text}{combats}. Poniżej przedstawiono wyniki w formie macierzy korelacji oraz wykresu słupkowego.
+
+W celu zbadania, które statystyki mają największy wpływ na wynik walk, obliczono macierz korelacji (Pearsona) pomiędzy atrybutami numerycznymi zbioru \mintinline{python}{pokemon} a współczynnikiem zwycięstw (\textit{Win Rate}) wyznaczonym na podstawie zbioru \mintinline{python}{combats}. \textit{Win Rate} definiowany jest jako stosunek liczby wygranych walk przez danego pokemona do całkowitej liczby pojedynków, w których brał on udział. W analizie tej pominięto atrybuty typów (\mintinline{text}{Type 1}, \mintinline{text}{Type 2}), ponieważ są to dane nominalne, co uniemożliwia bezpośrednie obliczenie ich korelacji z innymi zmiennymi numerycznymi przy użyciu standardowych metod. Poniżej przedstawiono wyniki w formie macierzy korelacji oraz wykresu słupkowego.
+
 
 \renewcommand{\figurename}{Rys}
 \setcounter{figure}{0}
@@ -433,20 +451,62 @@ W celu zbadania, które statystyki mają największy wpływ na wynik walk, oblic
 \begin{itemize}
     \item Najsilniejszą korelację z \textit{Win Rate} wykazuje atrybut \mintinline{text}{Speed} (wartość korelacji $\approx 0.94$). Oznacza to, że szybkość pokemona jest decydującym czynnikiem wpływającym na wynik walki w tym zbiorze danych. Jest to zgodne z mechaniką gry, w której pokemon o wyższej prędkości atakuje jako pierwszy, co daje mu przewagę.
     \item Na kolejnych miejscach pod względem korelacji z \textit{Win Rate} znalazły się: \mintinline{text}{Attack} ($\approx 0.50$) oraz \mintinline{text}{Sp. Atk} ($\approx 0.48$). Oba atrybuty bezpośrednio wpływają na zadawane obrażenia, co tłumaczy ich istotny związek z wynikiem walki.
-    \item \mintinline{text}{Legendary} wykazuje korelację $\approx 0.32$ z \textit{Win Rate}. Pokémony legendarne mają generalnie wyższe statystyki, stąd ich wyższa skuteczność w walkach.
+    \item Atrybut \mintinline{text}{Legendary} wykazuje korelację $\approx 0.32$ z \textit{Win Rate}. Pokémony legendarne mają generalnie wyższe statystyki, stąd ich wyższa skuteczność w walkach.
     \item Atrybuty \mintinline{text}{Defense} ($\approx 0.11$) i \mintinline{text}{Generation} ($\approx 0.02$) mają najniższą korelację z \textit{Win Rate}, co sugeruje, że obrona i generacja pokemona mają stosunkowo małe znaczenie dla predykcji wyniku walki w tym zbiorze.
     \item Macierz korelacji między samymi statystykami wskazuje na umiarkowane związki pomiędzy \mintinline{text}{Defense} i \mintinline{text}{Sp. Def} ($\approx 0.51$) oraz pomiędzy \mintinline{text}{Sp. Atk} i \mintinline{text}{Sp. Def} ($\approx 0.51$), co może świadczyć o pewnej redundancji tych atrybutów.
 \end{itemize}
 
+\subsubsection*{Analiza zmiennych kategorycznych w podziale na generacje}
+W ramach eksploracyjnej analizy danych zbadaliśmy również, czy istnieje zależność pomiędzy generacją pokemona a jego typem. Głównym celem tej analizy było sprawdzenie, czy dane te są zgodne z mechaniką prawdziwej gry (konkretne typy pojawiają się dopiero w konkretnych generacjach).
+
+\begin{adjustbox}{center,caption={Wykres reprezentujący udział procentowy pokemonów wykonujących drugi atak},label={rysunek 3},nofloat=figure,vspace=\bigskipamount}
+\includegraphics[width=\textwidth]{4_other/missing_t2_per_gen.png}
+\end{adjustbox}
+
+\noindent
+Wykres 3.3 znajdujący się na poprzedniej stronie wyraźnie pokazuje, że przynależność pokemona to konkretnej generacji nie ma znacznego wpływu na to, czy będzie on miał drugi typ. Dodatkowo wykres pokazuje nam, że rozkład pokemonów względem możliwości wykonywania ataków jest mniej więcej równomierny i bliski \(50\%\) dla każdej z generacji.\\\\
+\noindent
+Wykres 3.4 poniżej, obrazuje jaki procent pokemonów danego typu przynależy do danej generacji (np. 58\% pokemonów typu Poison jest w pierwszej generacji). Możemy jasno zaobserwować, że podział typów pokemonów nie jest zgodny z mechaniką prawdziwej gry - wszystkie typy występują w każdej z generacji (nawet jeśli jest to niewielka ilość).
+\\\\ \noindent
+Możemy też zauważyć, że rozkład typów (za wyjątkiem typu Poison) jest w miarę równomierny - typy nie koncentrują się w wybranych generacjach.
+
+
+\begin{adjustbox}{center,caption={Wykres reprezentujący procentowy udział typów pokemonów w zależności od generacji},label={rysunek 4},nofloat=figure,vspace=\bigskipamount}
+\includegraphics[width=\textwidth]{4_other/type_distribution_by_generation.png}
+\end{adjustbox}
 
 \subsection{Wyniki analizy danych a cel eksploracji}
 
-Na podstawie przeprowadzonej analizy eksploracyjnej można ocenić, że ustalony przez nas cel eksploracji jest możliwy do osiągnięcia.\\\\ \noindent Atrybut \mintinline{text}{Speed} dominuje jako predyktor wyniku walki. Pozostałe atrybuty ofensywne (Attack, Sp. Atk) również wnoszą istotną informację. Dane są dobrej jakości — brak brakujących wartości w atrybutach numerycznych, jedynie atrybut \mintinline{text}{Type 2} wymaga obsługi wartości pustych. Punkty oddalone nie stanowią błędów i zostają zachowane, gdyż odzwierciedlają charakterystykę silniejszych pokemonów.
+Na podstawie przeprowadzonej analizy eksploracyjnej można ocenić, że ustalony przez nas cel eksploracji jest możliwy do osiągnięcia.\\\\ \noindent Atrybut \mintinline{text}{Speed} dominuje jako predyktor wyniku walki, ale pozostałe atrybuty ofensywne (Attack, Sp. Atk) również wnoszą istotną informację. Dane są dobrej jakości — brak brakujących wartości w atrybutach numerycznych, jedynie atrybut \mintinline{text}{Type 2} wymaga obsługi wartości pustych. Punkty oddalone nie stanowią błędów i zostają zachowane, gdyż odzwierciedlają charakterystykę silniejszych pokemonów.
 
 \section{Podsumowanie}
 
-TODO!!!!!!!!!!!
+Przeprowadzona eksploracyjna analiza danych pozwoliła nam na wstępną ocenę jakości zbioru danych oraz identyfikację najważniejszych zależności między statystykami pokemonów a wynikami ich walk.
 
+\subsection{Najważniejsze obserwacje}
+\begin{itemize}
+    \item Dane są spójne i zrozumiałe. Dane brakujące (atrybut \mintinline{text}{Type 2}) oraz punkty oddalone (najwięcej dla HP: 2,4\%) mają uzasadnienie merytoryczne i nie stanowią błędów pomiarowych. Ich pozostawienie jest kluczowe dla zachowania zdolności predykcyjnych modelu w starciach z najsilniejszymi jednostkami.
+    \item Analiza korelacji wskazała atrybut \mintinline{text}{Speed} jako najsilniejszy predyktor wyniku walki (korelacja $\approx 0.94$). Atrybuty ofensywne (\mintinline{text}{Attack}, \mintinline{text}{Sp. Atk}) również wykazują istotny związek z wygraną. Jednocześnie największa korelacja między samymi statystykami wynosi ok. 0.51 — ze względu na umiarkowaną siłę tych powiązań nie zaleca się redukcji wymiarowości, aby nie utracić cennych informacji.
+    \item Mimo niezbalansowania niektórych atrybutów nominalnych (np. tylko 8,1\% to pokemony \mintinline{text}{Legendary}), sama zmienna celu jest dobrze zbalansowana — zwycięstwa pierwszego pokemona stanowią 47,20\%, a drugiego 52,80\%. Ułatwi to proces trenowania modelu bez konieczności stosowania technik re-samplingu.
+    % pkt 3 wyglada ok, ale nie wiem czy nie powinno byc cos o tym w analizie w sekcji 3 skoro jest tutaj? (chociaz z drugiej strony nie wiem czy warto caly graf czy cos dla dwoch wartosci robic)
+
+    % wlasnie masz jakos podobno opisane w pkt. 3, ale to jako wniosek koncowy chyba jest git, nwm,
+    % zostawilbym tak
+
+
+    \item Analiza statystyczna atrybutów numerycznych (HP, Attack, Defense, Sp. Atk, Sp. Def, Speed) wykazała, że dla każdego z nich średnia arytmetyczna jest większa od mediany ($\bar{x} > M$), a współczynnik skośności nieparametrycznej $S$ przyjmuje wartości dodatnie. Dowodzi to wyraźnej prawoskośności rozkładów — większość pokemonów posiada przeciętne statystyki, a nieliczne jednostki o ekstremalnych wartościach (w tym pokemony legendarne) tworzą tzw. "długi ogon" rozkładu.
+
+\end{itemize}
+
+    % klasy docelowe to nie zwyciestwo przegrana? tylko ktory pokemon wygra? chyba? tak
+    %Wygrane pierwszego pokemona: 23 601 (47,20%)
+    %Wygrane drugiego pokemona: 26 399 (52,80%) wiec chyba jest zbalansowane
+    %\item \textbf{Niezbalansowanie klas:} Wstępna analiza wykazała, że klasy docelowe (zwycięstwo/przegrana) mogą nie być idealnie zbalansowane w zależności od zestawienia typów, co będzie wymagało odpowiedniego podejścia przy trenowaniu modelu klasyfikacji binarnej.
+
+\subsection{Wnioski końcowe}
+% wyrazne zaleznosci korelacyjne jest tutaj poprawne, bo w sekcji wczesniej jest ze nie ma zaleznosci??
+% chyba tu jest ok bo jest miedzy statystykami a wynikami walk, a wyzej miedzy statysykami nawzajem
+Biorąc pod uwagę wysoką jakość danych oraz silne zależności korelacyjne między statystykami (szczególnie szybkością i atakiem) a wynikami historycznych walk, uznajemy, że cel eksploracji — budowa modelu klasyfikacji binarnej o wysokiej dokładności — jest w pełni osiągalny. Zbiór danych jest wystarczający i kompletny, co pozwala na przejście do kolejnego etapu projektu (przygotowanie danych i modelowanie) bez konieczności rewizji pierwotnych celów i kryteriów sukcesu.
 % ---------------------------------------------------------------------------------
 % SOURCES -------------------------------------------------------------------------
 % ---------------------------------------------------------------------------------
@@ -459,26 +519,23 @@ TODO!!!!!!!!!!!
 \renewcommand{\labelenumi}{[\arabic{enumi}]}
 \begin{enumerate}
 
-\item \url{https://tjzhifei.github.io/links/DM3.pdf} CITE AS A BOOK AND NOT LINK
+\item Witten I.H., Frank E., Hall M.A.: Input: Concepts, Instances, and Attributes, W: \textit{Data Mining. Practical Machine Learning Tools and Techniques}, Wydanie III, Burlington, USA: Morgan Kaufmann (Elsevier), 2011, s.39-60, ISBN 978-0-12-374856-0.
 
-\item materialy wykladowe ED 2025/26
+\item Waloszek W., Zawadzka T.: \textit{Podstawowe Zagadnienia i Terminy} [materiały wykładowe], Gdańsk (Politechnika Gdańska), 2026
+\item Waloszek W., Zawadzka T.: \textit{Eksploracyjna Analiza Danych (EDA)} [materiały wykładowe], Gdańsk (Politechnika Gdańska), 2026
 
-\item \url{https://en.wikipedia.org/wiki/Accuracy_and_precision#In_binary_classification}
+\item  Accuracy and precision, W: \textit{Wikipedia}, [online], 18.04.2026, [przeglądany 19.04.2026], Dostępny w: \url{https://en.wikipedia.org/wiki/Accuracy_and_precision}
 
-\item \url{https://en.wikipedia.org/wiki/F-score}
+\item  F-score, W: \textit{Wikipedia}, [online], 22.03.2026, [przeglądany 19.04.2026], Dostępny w: \url{https://en.wikipedia.org/wiki/F-score}
 
-\item \url{https://en.wikipedia.org/wiki/Precision_and_recall}
+\item  Precision and recall, W: \textit{Wikipedia}, [online], 22.03.2026, [przeglądany 19.04.2026], Dostępny w: \url{https://en.wikipedia.org/wiki/Precision_and_recall}
 
+\item  Nonparametric skew, W: \textit{Wikipedia}, [online], 18.02.2026, [przeglądany 19.04.2026], Dostępny w: \url{% https://en.wikipedia.org/wiki/Nonparametric_skew}
 
+\item  Skewness, W: \textit{Wikipedia}, [online], 11.03.2026, [przeglądany 19.04.2026], Dostępny w: \url{https://en.wikipedia.org/wiki/Skewness}
 
-% ---------------------------------------------------------------------------------
-% ALL the sources we use ex. for understanding how to use the methods in 3.2 or how we chose approach to missing data (essentialy - if we use the knowledge on anything (wikipedia and lecture powerpoints do count) put in in here) etc
-% its especially important since we ALL NEED TO TALK WHEN PRESENTING IT, so knowing exaclty how some conclusions were reached will be way easier like this (and so will formulating the final conclusions etc)
-% (if you dont know how to cite it properly just put in the link and access date for now)
-% ---------------------------------------------------------------------------------
-
-% source to use not to cite (DELETE BEFORE SUBMITTING!!!)
-\item \url{https://www.nceas.ucsb.edu/sites/default/files/2022-06/Colorblind%20Safe%20Color%20Schemes.pdf}
+% source to use not to cite
+%\url{https://www.nceas.ucsb.edu/sites/default/files/2022-06/Colorblind%20Safe%20Color%20Schemes.pdf}
 
 \end{enumerate}
 
