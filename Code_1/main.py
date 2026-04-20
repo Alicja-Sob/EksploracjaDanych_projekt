@@ -67,7 +67,6 @@ def distribution_generation(csv_file):
         histograms(csv_file, attribute)
 
 
-
 def attribute_data(csv_file, attribute, save=False, folder=None):
     data = csv_file[attribute].dropna()
 
@@ -75,6 +74,14 @@ def attribute_data(csv_file, attribute, save=False, folder=None):
 
     median = np.median(data)
     averge = np.mean(data)
+    std_dev = np.std(data, ddof=1)  # sample standard deviation
+
+    # Nonparametric skew
+    if std_dev != 0:
+        skew_np = (averge - median) / std_dev
+    else:
+        skew_np = 0  # avoid division by zero
+
     q1 = np.percentile(data, 25)
     q3 = np.percentile(data, 75)
 
@@ -90,10 +97,12 @@ def attribute_data(csv_file, attribute, save=False, folder=None):
 
     print(f"======= {attribute} =======")
     print(f"Mediana: {median:.2f}\n"
-        f"Przedział wartości (Q1–Q3): [{q1:.2f}; {q3:.2f}]\n"
-        f"Liczba punktów oddalonych: {outliers_count}\n"
-        f"Procent punktów oddalonych: {outliers_pct:.2f}%\n"
-        f"Średnia: {averge:.2f}\n")
+          f"Odchylenie standardowe: {std_dev:.2f}\n"
+          f"Skośność nieparametryczna: {skew_np:.4f}\n"
+          f"Przedział wartości (Q1–Q3): [{q1:.2f}; {q3:.2f}]\n"
+          f"Liczba punktów oddalonych: {outliers_count}\n"
+          f"Procent punktów oddalonych: {outliers_pct:.2f}%\n"
+          f"Średnia: {averge:.2f}\n")
 
 
 def box_plots_generation(csv_file):
