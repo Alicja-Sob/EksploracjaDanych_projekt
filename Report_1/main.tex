@@ -48,10 +48,10 @@
 
 \begin{document}
 \title{
-  \Huge \textbf{Eksploracja Danych - projekt}
-  \\ \vspace{5pt}
+  \Huge \textbf{Eksploracja Danych - projekt} 
+  \\ \vspace{5pt} 
   \LARGE  Etap 1: Zrozumienie danych i problemu
-  \\ \vspace{10pt}
+  \\ \vspace{10pt} 
   \Large  Pokémon - Weedle's Cave
 }
 
@@ -77,7 +77,7 @@ Maciej Łukasiewicz, 197865}
 \addcontentsline{toc}{part}{Sprawozdanie}
 
 % okreslenie celu eksploracji i kryteriow sukcesu
-\section{Cel eksploracji}
+\section{Cel eksploracji} 
 
 Celem eksploracji jest budowa modelu pozwalającego na predykcję wyników walk pokemonów na podstawie przypisanym im statystyk. Docelowo rozwiązywanym problemem będzie \textbf{klasyfikacja binarna}. Dodatkowym celem jest określenie, które statystyki mają największy wpływ na rezultat pojedynków.\\\\
 \noindent
@@ -85,10 +85,10 @@ W przypadku tego problemu najistotniejszą metryką będzie dokładność [ang. 
 \[\text{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}\]
 gdzie:
 \begin{itemize}
-    \item \(TP\) - [ang. \textit{true positive}] ilość prawdziwie pozytywnych przypadków\\ (w naszym przypadku: poprawnie przewidziane zwycięstwo pierwszego pokemona)
+    \item \(TP\) - [ang. \textit{true positive}] ilość prawdziwie pozytywnych przypadków\\ (w naszym przypadku: poprawnie przewidziane zwycięstwo pierwszego pokemona) 
 \item \(TN\) - [ang. \textit{true negative}] ilość prawdziwie negatywnych przypadków\\ (w naszym przypadku: poprawnie przewidziane zwycięstwo drugiego pokemona)
 \item \(FP\) - [ang. \textit{false positive}] ilość fałszywie pozytywnych przypadków\\ (w naszym przypadku: błędnie przewidziane zwycięstwo pierwszego pokemona)
-\item \(FN\) - [ang. \textit{false negative}] ilość fałszywie negatywnych przypadków\\ (w naszym przypadku: błędnie przewidziane zwycięstwo drugiego pokemona)\\
+\item \(FN\) - [ang. \textit{false negative}] ilość fałszywie negatywnych przypadków\\ (w naszym przypadku: błędnie przewidziane zwycięstwo drugiego pokemona)\\ 
 \end{itemize}
 
 \noindent
@@ -115,11 +115,11 @@ Zestaw danych \mintinline{text}{pokemon} zawiera numer id, nazwę oraz statystyk
 
 \subsection{Charakterystyka zbioru danych}
 \begin{itemize}
-    \item \textbf{Pochodzenie}\\
+    \item \textbf{Pochodzenie}\\ 
     \url{https://www.kaggle.com/datasets/terminus7/pokemon-challenge}
-
+    
     \item \textbf{Format}\\.csv
-
+    
     \item \textbf{Zawarte zbiory danych}
     \begin{itemize}
         \item Rozstrzygnięte walki - \mintinline{text}{combats.csv}
@@ -129,19 +129,19 @@ Zestaw danych \mintinline{text}{pokemon} zawiera numer id, nazwę oraz statystyk
 
     \item \textbf{Liczba przykładów}
     \begin{itemize}
-        \item \mintinline{text}{combats} - 50 000
+        \item \mintinline{text}{combats} - 50 000 
         \item \mintinline{text}{pokemon} - 800
-        \item \mintinline{text}{tests} - 10 000
+        \item \mintinline{text}{tests} - 10 000 
     \end{itemize}
-
+    
 \end{itemize}
 
 \subsection{Wstępne ustalenia dotyczące zawartości zbiorów}
 
 \begin{itemize}
-    \item Każdy przykład w zbiorze danych \mintinline{text}{combats} i \mintinline{text}{tests} opisuje jedną, niezależną od innych walkę między dwoma różnymi pokemonami.
+    \item Każdy przykład w zbiorze danych \mintinline{text}{combats} i \mintinline{text}{tests} opisuje jedną, niezależną od innych walkę między dwoma różnymi pokemonami. 
     \item Statystyki pokemonów mają bezpośredni wpływ na wynik walk
-    \item Brakujące wartości atrybutu 'Type 2' oznaczają brak drugiego ataku a nie brak danych
+    \item Brakujące wartości atrybutu \mintinline{text}{Type 2} oznaczają brak drugiego ataku a nie brak danych
     \item Zbiór danych \mintinline{text}{tests} służy tylko do oceny naszego modelu
     \item Kolejność pokemonów w zbiorach \mintinline{text}{combats} i \mintinline{text}{tests} nie powinna wpływać na wynik predykcji
 \end{itemize}
@@ -187,7 +187,7 @@ W ogólności atrybuty numeryczne dzielą się na dwie 'kategorie': numery ident
 
 \subsection{Uwagi na temat jakości danych}
 \subsubsection{Dane brakujące}
-Brakuje blisko połowy (386 na 800) wartości atrybutu 'Type 2'.\\\\ \noindent
+Brakuje blisko połowy (386 na 800) wartości atrybutu \mintinline{text}{Type 2}.\\\\ \noindent
 Zakładamy, że drugi typ ataku jest opcjonalny a brak przypisanej wartości przyjmujemy jako brak drugiego typu. Nie uzupełniamy więc brakujących wartości poza zastąpieniem ich wartością "None".
 
 
@@ -215,7 +215,7 @@ Powyższe obserwacje zostały opracowane na podstawie tabeli 3.1 zaczynającej s
 \begin{tabularx}{\textwidth}{|c|Y|c|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres pudełkowy} & \textbf{Wartości} \\ \hline
-HP               &
+HP               &       
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -224,7 +224,7 @@ HP               &
 &
 \begin{tabular}[c]{@{}c@{}}Med: 65.0\\ Avg: 69.26 \\\\PNW: {[}50.0; 80.0{]}\\\\ Odd: 19\\ Odd(\%): 2.38\%\end{tabular}
 \\ \hline
-Attack           &
+Attack           &       
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -233,7 +233,7 @@ Attack           &
 &
 \begin{tabular}[c]{@{}c@{}}Med: 75.0\\ Avg: 79.0 \\\\PNW: {[}55.0; 100.0{]}\\\\ Odd: 7\\ Odd(\%): 0.88\%\end{tabular}
 \\ \hline
-Defense          &
+Defense          &       
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -249,7 +249,7 @@ Defense          &
 \begin{tabularx}{\textwidth}{|c|Y|c|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres pudełkowy} & \textbf{Wartości} \\ \hline
-Sp. Atk          &
+Sp. Atk          &       
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -258,7 +258,7 @@ Sp. Atk          &
 &
 \begin{tabular}[c]{@{}c@{}}Med: 65.0\\ Avg: 72.82\\\\PNW: {[}49.75; 95.0{]}\\\\ Odd: 10\\ Odd(\%): 1.25\%\end{tabular}
 \\ \hline
-Sp. Def          &
+Sp. Def          &       
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -267,7 +267,7 @@ Sp. Def          &
 &
 \begin{tabular}[c]{@{}c@{}}Med: 70\\ Avg: 71.90\\\\PNW: {[}50.0; 90.0{]}\\\\ Odd: 7\\ Odd(\%): 0.88\%\end{tabular}
 \\ \hline
-Speed            &
+Speed            &       
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -289,13 +289,13 @@ Speed            &
 \begin{tabularx}{\textwidth}{|c|Y|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres} \\ \hline
-Legendary        &
+Legendary        &      
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
   \includegraphics[width=\linewidth]{1_distribution/Legendary_dist.png}
 \end{minipage}              \\ \hline
-Generation       &
+Generation       &      
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -308,13 +308,13 @@ Generation       &
 \begin{tabularx}{\textwidth}{|c|Y|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres} \\ \hline
-Type 1           &
+Type 1           &      
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
   \includegraphics[width=\linewidth]{1_distribution/Type_1_dist.png}
 \end{minipage}                 \\ \hline
-\begin{tabular}[c]{@{}c@{}}Type 2\\ (no missing\\ values)\end{tabular}           &
+\begin{tabular}[c]{@{}c@{}}Type 2\\ (no missing\\ values)\end{tabular}           &      
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -327,13 +327,13 @@ Type 1           &
 \begin{tabularx}{\textwidth}{|c|Y|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Type 2\\ (with missing\\ values)\end{tabular}           &
+\begin{tabular}[c]{@{}c@{}}Type 2\\ (with missing\\ values)\end{tabular}           &      
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
   \includegraphics[width=\linewidth]{1_distribution/type2_withNaN.png}
 \end{minipage}                 \\ \hline
-HP               &
+HP               &       
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -346,13 +346,13 @@ HP               &
 \begin{tabularx}{\textwidth}{|c|Y|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres} \\ \hline
-Attack           &
+Attack           &        
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
   \includegraphics[width=\linewidth]{1_distribution/Attack_hist.png}
 \end{minipage}                 \\ \hline
-Defense          &
+Defense          &         
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -365,13 +365,13 @@ Defense          &
 \begin{tabularx}{\textwidth}{|c|Y|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres} \\ \hline
-Sp. Atk          &
+Sp. Atk          &            
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
   \includegraphics[width=\linewidth]{1_distribution/Sp_Atk_hist.png}
 \end{minipage}                 \\ \hline
-Sp. Def          &
+Sp. Def          &            
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -384,7 +384,7 @@ Sp. Def          &
 \begin{tabularx}{\textwidth}{|c|Y|}
 \hline
 \textbf{Atrybut} & \textbf{Wykres} \\ \hline
-Speed            &
+Speed            &            
 \begin{minipage}{\linewidth}
   \vspace{1.5mm}
   \centering
@@ -468,7 +468,7 @@ Wykres 3.3 znajdujący się na poprzedniej stronie wyraźnie pokazuje, że przyn
 \noindent
 Wykres 3.4 poniżej, obrazuje jaki procent pokemonów danego typu przynależy do danej generacji (np. 58\% pokemonów typu Poison jest w pierwszej generacji). Możemy jasno zaobserwować, że podział typów pokemonów nie jest zgodny z mechaniką prawdziwej gry - wszystkie typy występują w każdej z generacji (nawet jeśli jest to niewielka ilość).
 \\\\ \noindent
-Możemy też zauważyć, że rozkład typów (za wyjątkiem typu Poison) jest w miarę równomierny - typy nie koncentrują się w wybranych generacjach.
+Możemy też zauważyć, że rozkład typów (za wyjątkiem typu Poison) jest w miarę równomierny - typy nie koncentrują się w wybranych generacjach. 
 
 
 \begin{adjustbox}{center,caption={Wykres reprezentujący procentowy udział typów pokemonów w zależności od generacji},label={rysunek 4},nofloat=figure,vspace=\bigskipamount}
@@ -493,9 +493,9 @@ Przeprowadzona eksploracyjna analiza danych pozwoliła nam na wstępną ocenę j
     % wlasnie masz jakos podobno opisane w pkt. 3, ale to jako wniosek koncowy chyba jest git, nwm,
     % zostawilbym tak
 
-
+    
     \item Analiza statystyczna atrybutów numerycznych (HP, Attack, Defense, Sp. Atk, Sp. Def, Speed) wykazała, że dla każdego z nich średnia arytmetyczna jest większa od mediany ($\bar{x} > M$), a współczynnik skośności nieparametrycznej $S$ przyjmuje wartości dodatnie. Dowodzi to wyraźnej prawoskośności rozkładów — większość pokemonów posiada przeciętne statystyki, a nieliczne jednostki o ekstremalnych wartościach (w tym pokemony legendarne) tworzą tzw. "długi ogon" rozkładu.
-
+    
 \end{itemize}
 
     % klasy docelowe to nie zwyciestwo przegrana? tylko ktory pokemon wygra? chyba? tak
@@ -504,7 +504,7 @@ Przeprowadzona eksploracyjna analiza danych pozwoliła nam na wstępną ocenę j
     %\item \textbf{Niezbalansowanie klas:} Wstępna analiza wykazała, że klasy docelowe (zwycięstwo/przegrana) mogą nie być idealnie zbalansowane w zależności od zestawienia typów, co będzie wymagało odpowiedniego podejścia przy trenowaniu modelu klasyfikacji binarnej.
 
 \subsection{Wnioski końcowe}
-% wyrazne zaleznosci korelacyjne jest tutaj poprawne, bo w sekcji wczesniej jest ze nie ma zaleznosci??
+% wyrazne zaleznosci korelacyjne jest tutaj poprawne, bo w sekcji wczesniej jest ze nie ma zaleznosci?? 
 % chyba tu jest ok bo jest miedzy statystykami a wynikami walk, a wyzej miedzy statysykami nawzajem
 Biorąc pod uwagę wysoką jakość danych oraz silne zależności korelacyjne między statystykami (szczególnie szybkością i atakiem) a wynikami historycznych walk, uznajemy, że cel eksploracji — budowa modelu klasyfikacji binarnej o wysokiej dokładności — jest w pełni osiągalny. Zbiór danych jest wystarczający i kompletny, co pozwala na przejście do kolejnego etapu projektu (przygotowanie danych i modelowanie) bez konieczności rewizji pierwotnych celów i kryteriów sukcesu.
 % ---------------------------------------------------------------------------------
