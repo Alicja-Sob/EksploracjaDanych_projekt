@@ -110,6 +110,84 @@ def box_plots_generation(csv_file):
         box_plot(csv_file, attribute)
         attribute_data(csv_file, attribute)
 
+def attack_type_vs_generation(csv_file):
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import os
+
+    df = csv_file.copy()
+
+    # reshape types
+    types_long = pd.melt(
+        df,
+        id_vars=["Generation"],
+        value_vars=["Type 1", "Type 2"],
+        value_name="Type"
+    )
+
+    types_long = types_long.dropna()
+    types_long = types_long[types_long["Type"] != "None"]
+
+    # contingency table
+    pivot = pd.crosstab(types_long["Generation"], types_long["Type"])
+
+    # ✔ normalize per TYPE (column-wise)
+    pivot_percent = pivot.div(pivot.sum(axis=0), axis=1) * 100
+
+    # optional: sort types by generation of peak occurrence
+    pivot_percent = pivot_percent.loc[:, pivot_percent.idxmax().sort_values().index]
+
+    # flip generations (Gen 1 at bottom)
+    pivot_percent = pivot_percent.sort_index(ascending=False)
+
+    # plot
+    plt.figure(figsize=(12, 6))
+    sns.heatmap(pivot_percent, cmap="mako_r", vmin=0,
+    annot=True,
+    fmt=".0f")
+
+    plt.title("Rozkład typów Pokémonów w generacjach (% udział typu)")
+    plt.xlabel("Typ")
+    plt.ylabel("Generacja")
+
+    plt.tight_layout()
+
+    folder = "../Report_1/4_other"
+    os.makedirs(folder, exist_ok=True)
+    plt.savefig(f"{folder}/type_distribution_by_generation.png")
+
+    plt.close()
+
+def type2_missing_vs_generation(csv_file):
+    df = csv_file.copy()
+
+    df["Type2_missing"] = df["Type 2"].isna() | (df["Type 2"] == "None")
+
+    pivot = pd.crosstab(df["Generation"], df["Type2_missing"])
+
+    pivot.columns = ["Wykonuje drugi atak", "Brak drugiego ataku"]
+    pivot_percent = pivot.div(pivot.sum(axis=1), axis=0) * 100
+
+    ax = pivot_percent.plot(kind="bar", stacked=True, figsize=(10,6),color=["#4d00ff", "#ff5900"])
+
+    plt.title("Występowanie drugiego typu w poszczególnych generacjach")
+    plt.xticks(rotation=0)
+    plt.ylabel("Procent pokemonów")
+    plt.ylim(0, 100)
+    plt.legend(loc="upper right")
+
+    plt.tight_layout()
+    #plt.show()
+    folder = "../Report_1/4_other"
+    os.makedirs(folder, exist_ok=True)
+    plt.savefig(f"{folder}/missing_t2_per_gen.png")
+
+def category_analysis(csv_file):
+    attack_type_vs_generation(csv_file)
+    type2_missing_vs_generation(csv_file)
+
+
 
 def main():
     combats_csv = pd.read_csv('../Dataset/combats.csv')
@@ -117,7 +195,8 @@ def main():
     tests_csv = pd.read_csv('../Dataset/tests.csv')
 
 #    distribution_generation(pokemon_csv)
-    box_plots_generation(pokemon_csv)
+ #   box_plots_generation(pokemon_csv)
+    category_analysis(pokemon_csv)
 
 if __name__=="__main__":
     main()
