@@ -22,10 +22,10 @@ def barplots(csv_file, attribute):
     plt.ylabel("Liczba przykładów")
 
     plt.tight_layout()
-    plt.show()
+   # plt.show()
     folder = "../Report_1/1_distribution"
     os.makedirs(folder, exist_ok=True)
-   # plt.savefig(f"{folder}/{attribute.replace(" ", "_")}_dist.png")
+    plt.savefig(f"{folder}/{attribute.replace(" ", "_")}_dist.png")
 
 
 def histograms(csv_file, attribute):
@@ -37,10 +37,10 @@ def histograms(csv_file, attribute):
     plt.title(f"Histogram atrybutu {attribute}")
     plt.ylabel("Liczba przykładów")
     plt.tight_layout()
-    plt.show()
+  #  plt.show()
     folder = "../Report_1/1_distribution"
     os.makedirs(folder, exist_ok=True)
-  #  plt.savefig(f"{folder}/{attribute.replace(" ", "_").replace(".","")}_hist.png")
+    plt.savefig(f"{folder}/{attribute.replace(" ", "_").replace(".","")}_hist.png")
 
 
 def box_plot(csv_file, attribute):
@@ -67,32 +67,27 @@ def distribution_generation(csv_file):
         histograms(csv_file, attribute)
 
 
-def attribute_data(csv_file, attribute, save=False, folder=None):
+def attribute_data(csv_file, attribute):
     data = csv_file[attribute].dropna()
-
     n = len(data)
 
     median = np.median(data)
     averge = np.mean(data)
-    std_dev = np.std(data, ddof=1)  # sample standard deviation
+    std_dev = np.std(data, ddof=1)
 
-    # Nonparametric skew
     if std_dev != 0:
         skew_np = (averge - median) / std_dev
     else:
-        skew_np = 0  # avoid division by zero
+        skew_np = 0
 
     q1 = np.percentile(data, 25)
     q3 = np.percentile(data, 75)
-
     iqr = q3 - q1
     lower_bound = q1 - 1.5 * iqr
     upper_bound = q3 + 1.5 * iqr
 
     outliers = data[(data < lower_bound) | (data > upper_bound)]
     outliers_count = len(outliers)
-
-    # percentage of outliers
     outliers_pct = (outliers_count / n) * 100
 
     print(f"======= {attribute} =======")
@@ -161,14 +156,11 @@ def attack_type_vs_generation(csv_file):
 
 def type2_missing_vs_generation(csv_file):
     df = csv_file.copy()
-
     df["Type2_missing"] = df["Type 2"].isna() | (df["Type 2"] == "None")
 
     pivot = pd.crosstab(df["Generation"], df["Type2_missing"])
-
     pivot.columns = ["Wykonuje drugi atak", "Brak drugiego ataku"]
     pivot_percent = pivot.div(pivot.sum(axis=1), axis=0) * 100
-
     ax = pivot_percent.plot(kind="bar", stacked=True, figsize=(10,6),color=["#4d00ff", "#ff5900"])
 
     plt.title("Występowanie drugiego typu w poszczególnych generacjach")
@@ -186,7 +178,6 @@ def type2_missing_vs_generation(csv_file):
 def category_analysis(csv_file):
     attack_type_vs_generation(csv_file)
     type2_missing_vs_generation(csv_file)
-
 
 
 def main():
