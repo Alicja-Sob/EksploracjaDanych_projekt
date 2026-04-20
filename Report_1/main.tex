@@ -19,6 +19,7 @@
 \usepackage{amssymb}
 \usepackage{xurl}
 \usepackage{chngcntr}
+\usepackage{tabularx}
 
 \counterwithin{figure}{section}
 \makeatletter
@@ -47,9 +48,11 @@
 
 \begin{document}
 \title{
-  \Huge \textbf{Eksploracja Danych - projekt no.1} 
-  \\ \vspace{10pt} 
-  \LARGE  Pokemon- Weedle's Cave
+  \Huge \textbf{Eksploracja Danych - projekt}
+  \\ \vspace{5pt}
+  \LARGE  Etap 1: Zrozumienie danych i problemu
+  \\ \vspace{10pt}
+  \Large  Pokémon - Weedle's Cave
 }
 
 \author{Alicja Sobiech, 188861\\
@@ -63,6 +66,9 @@ Maciej Łukasiewicz, 197865}
 
 \tableofcontents
 
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\renewcommand{\arraystretch}{1.2}
+
 % ---------------------------------------------------------------------------------
 % PAPER ITSELF --------------------------------------------------------------------
 % ---------------------------------------------------------------------------------
@@ -71,56 +77,375 @@ Maciej Łukasiewicz, 197865}
 \addcontentsline{toc}{part}{Sprawozdanie}
 
 % okreslenie celu eksploracji i kryteriow sukcesu
-\section{Cel eksploracji} 
+\section{Cel eksploracji}
 
-Celem eksploracji jest ....
+Celem eksploracji jest budowa modelu pozwalającego na predykcję wyników walk pokemonów na podstawie przypisanym im statystyk. Docelowo rozwiązywanym problemem będzie \textbf{klasyfikacja binarna}. Dodatkowym celem jest określenie, które statystyki mają największy wpływ na rezultat pojedynków.\\\\
+\noindent
+W przypadku tego problemu najistotniejszą metryką będzie dokładność [ang. \textit{accuracy}], informująca nas o tym, jak dobrze nasz model klasyfikuje walki, bez względu na ich wynik. Dokładność opisana jest poniższym wzorem\textsuperscript{[3]}:
+\[\text{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}\]
+gdzie:
+\begin{itemize}
+    \item \(TP\) - [ang. \textit{true positive}] ilość prawdziwie pozytywnych przypadków\\ (w naszym przypadku: poprawnie przewidziane zwycięstwo pierwszego pokemona)
+\item \(TN\) - [ang. \textit{true negative}] ilość prawdziwie negatywnych przypadków\\ (w naszym przypadku: poprawnie przewidziane zwycięstwo drugiego pokemona)
+\item \(FP\) - [ang. \textit{false positive}] ilość fałszywie pozytywnych przypadków\\ (w naszym przypadku: błędnie przewidziane zwycięstwo pierwszego pokemona)
+\item \(FN\) - [ang. \textit{false negative}] ilość fałszywie negatywnych przypadków\\ (w naszym przypadku: błędnie przewidziane zwycięstwo drugiego pokemona)\\
+\end{itemize}
+
+\noindent
+Do oceny jakości modelu wykorzystujemy dodatkowo metrykę F1-score będącą średnią harmoniczną precyzji [ang. \textit{precision}] i czułości [ang. \textit{recall}]. Pozwala ona na bardziej zrównoważoną ocenę modelu, szczególnie gdy zależy nam na unikaniu zarówno błędów fałszywie pozytywnych jak i fałszywie negatywnych. F1-score wyznaczamy za pomocą poniższego wzoru\textsuperscript{[4]}:
+\[F_1 = \frac{2}{\text{recall}^{-1} + \text{precision}^{-1]}}=2\frac{\text{precision} \cdot \text{recall}}{\text{precision}+\text{recall}}=\frac{2TP}{2TP+FP+FN}\]
+\noindent
+gdzie:
+\begin{itemize}
+    \item \(\text{precision} = \frac{TP}{TP+FP}\) - odsetek prawdziwie pozytywnych przypadków spośród wszystkich uznanych przez model za pozytywne
+    \item \(\text{recall} = \frac{TP}{TP+FN}\) - odsetek przypadków prawdziwie pozytywnych spośród wszystkich rzeczywistych przypadków pozytywnych
+\end{itemize}
+
+\subsection{Kryteria sukcesu}
+Sukces zostanie osiągnięty, jeżeli model uzyska dokładność [ang. \textit{accuracy}] na poziomie \(80\%\), a wartość miary F1-score na poziomie co najmniej \(0.75\).
 
 \section{Zbiór danych}
 
 % Ogólny opis zbioru danych
-Zbiór danych zawiera ....
+Zbiór danych składa się z trzech zestawów danych charakteryzujących pokemony i rezultaty walk między nimi. Charakterystyka Pokémonów zebrana została z samej gry, ale rezultaty walk zostały wygenerowane w sposób nie biorący pod uwagę niektórych elementów prawdziwej gry.\\\\
+\noindent
+Zbiory danych opisujące walki składają się z kolumn z numerami id walczących pokemonów. Zestaw \mintinline{text}{combats} zawiera dodatkowo wynik poszczególnych walk. Zbiór \mintinline{text}{tests} jest zbiorem testowym, zawierającym tylko numery id.\\\\
+\noindent
+Zestaw danych \mintinline{text}{pokemon} zawiera numer id, nazwę oraz statystyki pokemona. W skład statystyk wchodzą rodzaje dwóch ataków, zdrowie (HP), generacja, informacja czy pokemon jest legendarny oraz 5 wartości numerycznych opisujących umiejętności każdego z pokemonów, takich jak np. siła ataku.
 
 \subsection{Charakterystyka zbioru danych}
 \begin{itemize}
-    \item \textbf{Pochodzenie}\\ 
+    \item \textbf{Pochodzenie}\\
     \url{https://www.kaggle.com/datasets/terminus7/pokemon-challenge}
-    
-    \item \textbf{Format}\\
-    
-    \item \textbf{Liczba przykładów}\\
-    
-    \item \textbf{Ilość zbiorów danych}\\ 
+
+    \item \textbf{Format}\\.csv
+
+    \item \textbf{Zawarte zbiory danych}
+    \begin{itemize}
+        \item Rozstrzygnięte walki - \mintinline{text}{combats.csv}
+        \item Pokémony - \mintinline{text}{pokemon.csv}
+        \item Zbiór testowy - \mintinline{text}{tests.csv}
+    \end{itemize}
+
+    \item \textbf{Liczba przykładów}
+    \begin{itemize}
+        \item \mintinline{text}{combats} - 50 000
+        \item \mintinline{text}{pokemon} - 800
+        \item \mintinline{text}{tests} - 10 000
+    \end{itemize}
 
 \end{itemize}
 
+\subsection{Wstępne ustalenia dotyczące zawartości zbiorów}
+
+\begin{itemize}
+    \item Każdy przykład w zbiorze danych \mintinline{text}{combats} i \mintinline{text}{tests} opisuje jedną, niezależną od innych walkę między dwoma różnymi pokemonami.
+    \item Statystyki pokemonów mają bezpośredni wpływ na wynik walk
+    \item Brakujące wartości atrybutu 'Type 2' oznaczają brak drugiego ataku a nie brak danych
+    \item Zbiór danych \mintinline{text}{tests} służy tylko do oceny naszego modelu
+    \item Kolejność pokemonów w zbiorach \mintinline{text}{combats} i \mintinline{text}{tests} nie powinna wpływać na wynik predykcji
+\end{itemize}
+
 \subsection{Opis atrybutów}
-% opis atrybutow (nazwy, typy - nominalne/numeryczne, co oznaczaja, co oznaczaja wartosci - jednostka miary, wartosci specjalne)
+% opis atrybutow (nazwy, typy - nominalne/numeryczne, co oznaczaja, co oznaczaja wartosci - jednostka miary, wartosci specjalne???)
+Tabela 2.1 znajdująca się na następnej stronie opisuje wszystkie atrybuty zawarte w każdym z wykorzystanych zbiorów danych.\\\\ \noindent
+W ogólności atrybuty numeryczne dzielą się na dwie 'kategorie': numery identyfikacyjne i statystyki pokemonów. Wartości atrybutów reprezentujących statystyki nie odpowiadają żadnym jednostkom fizycznym - są one abstrakcyjne i uznajemy je za względne.\\
 
 \renewcommand{\figurename}{Tabela.}
-\begin{adjustbox}{center, caption={table description etc},nofloat=figure,vspace=\bigskipamount}
-% PLACE FOR A TABLE
+
+\begin{adjustbox}{center, captionabove={Opis atrybutów zawartych w zbiorach danych \mintinline{text}{combats}, \mintinline{text}{pokemon} i \mintinline{text}{tests}},nofloat=figure,vspace=\bigskipamount}
+
+\begin{tabularx}{\textwidth}{|c|c|Y|}
+
+\hline
+\multicolumn{1}{|c|}{\textbf{Atrybut}} & \multicolumn{1}{c|}{\textbf{Typ}} & \textbf{Znaczenie}                   \\ \hline
+\multicolumn{3}{|c|}{\cellcolor[HTML]{F2F2F2}\mintinline{text}{pokemon}}                                                             \\ \hline
+\multicolumn{1}{|c|}{\#}               & \multicolumn{1}{c|}{Numeryczny}   & Numer identyfikujący danego pokemona \\ \hline
+\multicolumn{1}{|c|}{Name}             & \multicolumn{1}{c|}{Nominalny}    & Nazwa danego pokemona                                    \\ \hline
+\multicolumn{1}{|c|}{Type 1}           & \multicolumn{1}{c|}{Nominalny}    & Typ pierwszego ataku. Typy pokemonów mają wpływ na efektywność wykonywanych ataków względem typu przeciwnika.                              \\ \hline
+\multicolumn{1}{|c|}{Type 2}           & \multicolumn{1}{c|}{Nominalny}    & Typ drugiego ataku (o ile jest wykonywany)                                    \\ \hline
+\multicolumn{1}{|c|}{HP}               & \multicolumn{1}{c|}{Numeryczny}   & Punkty życia danego pokemona                                    \\ \hline
+\multicolumn{1}{|c|}{Attack}           & \multicolumn{1}{c|}{Numeryczny}   & Siła regularnych ataków                                    \\ \hline
+\multicolumn{1}{|c|}{Defense}          & \multicolumn{1}{c|}{Numeryczny}   & Siła regularnych ruchów obronnych                                   \\ \hline
+\multicolumn{1}{|c|}{Sp. Atk}          & \multicolumn{1}{c|}{Numeryczny}   & Siła ataków specjalnych                                     \\ \hline
+\multicolumn{1}{|c|}{Sp. Def}          & \multicolumn{1}{c|}{Numeryczny}   & Siła specjalnych ruchów obronnych                                     \\ \hline
+\multicolumn{1}{|c|}{Speed}            & \multicolumn{1}{c|}{Numeryczny}   & Prędkość pokemona                                    \\ \hline
+\multicolumn{1}{|c|}{Generation}       & \multicolumn{1}{c|}{Porządkowy}   & Atrybut informuje do jakiej generacji należy dany pokemon. W każdej kolejnej generacji dodawane są nowe pokemony, ruchy i zdolności.                              \\ \hline
+\multicolumn{1}{|c|}{Legendary}        & \multicolumn{1}{c|}{Nominalny}    & Atrybut informuje czy dany pokemon jest legendarny                                    \\ \hline
+\multicolumn{3}{|c|}{\cellcolor[HTML]{F2F2F2}\mintinline{text}{combats}}                                                             \\ \hline
+\multicolumn{1}{|c|}{First\_pokemon}   & \multicolumn{1}{c|}{Numeryczny}   & Numer identyfikujący pokemona rozpoczynającego dany pojedynek                                    \\ \hline
+\multicolumn{1}{|c|}{Second\_pokemon}  & \multicolumn{1}{c|}{Numeryczny}   & Numer identyfikujący pokemona atakującego w drugiej kolejności                                    \\ \hline
+\multicolumn{1}{|c|}{Winner}           & \multicolumn{1}{c|}{Numeryczny}   & Numer identyfikujący pokemona, który wygrał dany pojedynek                                    \\ \hline
+\multicolumn{3}{|c|}{\cellcolor[HTML]{F2F2F2}\mintinline{text}{tests}}                                                             \\ \hline
+\multicolumn{1}{|c|}{First\_pokemon}   & \multicolumn{1}{c|}{Numeryczny}   & Numer identyfikujący pokemona rozpoczynającego dany pojedynek                                    \\ \hline
+\multicolumn{1}{|c|}{Second\_pokemon}  & \multicolumn{1}{c|}{Numeryczny}   & Numer identyfikujący pokemona atakującego w drugiej kolejności                                     \\ \hline
+\end{tabularx}
 \end{adjustbox}
+
 
 \section{Eksploracyjna Analiza Danych}
 
-\subsection{Wstępne ustalenia dotyczące zawartości zbioru}
+\subsection{Uwagi na temat jakości danych}
+\subsubsection{Dane brakujące}
+Brakuje blisko połowy (386 na 800) wartości atrybutu 'Type 2'.\\\\ \noindent
+Zakładamy, że drugi typ ataku jest opcjonalny a brak przypisanej wartości przyjmujemy jako brak drugiego typu. Nie uzupełniamy więc brakujących wartości poza zastąpieniem ich wartością "None".
+
+
+\subsubsection{Dane niespójne}
+
+Atrybuty nominalne nie zawierają błędów ortograficznych mających wpływ na analizę — każdy pokemon ma unikalną nazwę, więc ewentualne literówki nie wpływają na wyniki agregacji.
+Identyfikatory pokemonów w zbiorach \mintinline{text}{combats} i \mintinline{text}{tests} odwołują się wyłącznie do istniejących wpisów w zbiorze \mintinline{text}{pokemon}, co potwierdza spójność danych. Wartości numeryczne statystyk mieszczą się w rozsądnych zakresach i nie wykazują wewnętrznych sprzeczności.
+
+
+\subsubsection{Dane niezrozumiałe}
+
+Dane są na ogół zrozumiałe intuicyjnie, jednak pomocna jest podstawowa wiedza o mechanice gry Pokémon.\\\\ \noindent Atrybuty takie jak \mintinline{text}{Sp. Atk} i \mintinline{text}{Sp. Def} dotyczą ataków i obrony specjalnej, które w grze działają niezależnie od zwykłych statystyk ataku i obrony. Pojęcia generacji i statusu legendarnego wymagają kontekstu growego, lecz na potrzeby tej analizy ich interpretacja jest wystarczająco jasna.
+
+\subsubsection{Punkty oddalone}
+
+Średnia liczba punktów oddalonych względem atrybutów numerycznych wynosi ok. 9--10, co stanowi ok. 1,2\% wszystkich danych. Atrybutami o największej liczbie punktów oddalonych są \mintinline{text}{HP} (19 punktów oddalonych: ok. 2,4\% danych), \mintinline{text}{Defense} (13 punktów oddalonych: ok. 1,6\% danych) oraz \mintinline{text}{Sp. Atk} (10 punktów oddalonych: ok. 1,2\% danych).\\\\ \noindent
+Analizując punkty oddalone możemy dojść do wniosku, że dane są stosunkowo dobrej jakości - punkty te nie świadczą w naszym przypadku o błędach w danych.\\\\ \noindent
+Powyższe obserwacje zostały opracowane na podstawie tabeli 3.1 zaczynającej się na kolejnej stronie zaprezentowane są wykresy pudełkowe atrybutów numerycznych, będących statystykami pokemonów. Oprócz wykresów zaprezentowane są również wybrane wartości: Mediana (Med), Średnia wartość (Avg), PNW (Przedział najczęściej występujących wartości), Liczba punktów oddalonych (Odd) i Procentowej ilości punktów oddalonych na skali atrybutu (Odd(\%))
+
+%Analizując punkty oddalone możemy dojść do wniosku, że dane ??
+%średnie statystyki pokemonów legendarnych są wyraźnie wyższe we wszystkich kategoriach (np. średni Attack: 117 vs. 76, Sp. Atk: 122 vs. 69 dla nielegendarnych)
+
+
+\begin{adjustbox}{center, captionabove={Charakterystyka rozkładu wybranych atrybutów ze zbioru \mintinline{text}{pokemon}},nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|c|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres pudełkowy} & \textbf{Wartości} \\ \hline
+HP               &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{3_dataQualityCharts/HP_box.png}
+\end{minipage}
+&
+\begin{tabular}[c]{@{}c@{}}Med: 65.0\\ Avg: 69.26 \\\\PNW: {[}50.0; 80.0{]}\\\\ Odd: 19\\ Odd(\%): 2.38\%\end{tabular}
+\\ \hline
+Attack           &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{3_dataQualityCharts/Attack_box.png}
+\end{minipage}
+&
+\begin{tabular}[c]{@{}c@{}}Med: 75.0\\ Avg: 79.0 \\\\PNW: {[}55.0; 100.0{]}\\\\ Odd: 7\\ Odd(\%): 0.88\%\end{tabular}
+\\ \hline
+Defense          &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{3_dataQualityCharts/Defense_box.png}
+\end{minipage}
+&
+\begin{tabular}[c]{@{}c@{}}Med: 70.0\\ Avg: 73.84\\\\PNW: {[}50.0; 90.0{]}\\\\ Odd: 13\\ Odd(\%): 1.62\%\end{tabular}
+\\ \hline
+\end{tabularx}
+\end{adjustbox}
+
+\begin{adjustbox}{center,nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|c|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres pudełkowy} & \textbf{Wartości} \\ \hline
+Sp. Atk          &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{3_dataQualityCharts/Sp_Atk_box.png}
+\end{minipage}
+&
+\begin{tabular}[c]{@{}c@{}}Med: 65.0\\ Avg: 72.82\\\\PNW: {[}49.75; 95.0{]}\\\\ Odd: 10\\ Odd(\%): 1.25\%\end{tabular}
+\\ \hline
+Sp. Def          &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{3_dataQualityCharts/Sp_Def_box.png}
+\end{minipage}
+&
+\begin{tabular}[c]{@{}c@{}}Med: 70\\ Avg: 71.90\\\\PNW: {[}50.0; 90.0{]}\\\\ Odd: 7\\ Odd(\%): 0.88\%\end{tabular}
+\\ \hline
+Speed            &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{3_dataQualityCharts/Speed_box.png}
+\end{minipage}
+&
+\begin{tabular}[c]{@{}c@{}}Med: 65.0\\ Avg: 68.28\\\\PNW: {[}45.0; 90.0{]}\\\\ Odd: 2\\ Odd(\%): 0.25\%\end{tabular}
+\\ \hline
+\end{tabularx}
+\end{adjustbox}
 
 \subsection{Wyniki eksploracyjnej analizy danych}
 
-\subsubsection{Wyniki analizy danych a cel eksploracji}
-
 \subsubsection{Rozkłady wartości atrybutów}
+
+%TODO: FIX THE TABLE TO BE CORRECT THROUGH THE PAGES AFTER THE WHOLE TEXT IS DONE (so that we dont have to constantly come back and fix it)
+\renewcommand{\figurename}{Tabela.}
+\begin{adjustbox}{center, captionabove={Rozkłady wartości wybranych atrybutów zbioru danych \mintinline{text}{pokemon}},nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres} \\ \hline
+Legendary        &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Legendary_dist.png}
+\end{minipage}              \\ \hline
+Generation       &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Generation_dist.png}
+\end{minipage}                 \\ \hline
+\end{tabularx}
+\end{adjustbox}
+
+\begin{adjustbox}{center,nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres} \\ \hline
+Type 1           &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Type_1_dist.png}
+\end{minipage}                 \\ \hline
+\begin{tabular}[c]{@{}c@{}}Type 2\\ (no missing\\ values)\end{tabular}           &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Type_2_dist.png}
+\end{minipage}                 \\ \hline
+\end{tabularx}
+\end{adjustbox}
+
+\begin{adjustbox}{center,nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres} \\ \hline
+\begin{tabular}[c]{@{}c@{}}Type 2\\ (with missing\\ values)\end{tabular}           &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/type2_withNaN.png}
+\end{minipage}                 \\ \hline
+HP               &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/HP_hist.png}
+\end{minipage}                 \\ \hline
+\end{tabularx}
+\end{adjustbox}
+
+\begin{adjustbox}{center,nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres} \\ \hline
+Attack           &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Attack_hist.png}
+\end{minipage}                 \\ \hline
+Defense          &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Defense_hist.png}
+\end{minipage}                 \\ \hline
+\end{tabularx}
+\end{adjustbox}
+
+\begin{adjustbox}{center,nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres} \\ \hline
+Sp. Atk          &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Sp_Atk_hist.png}
+\end{minipage}                 \\ \hline
+Sp. Def          &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Sp_Def_hist.png}
+\end{minipage}                 \\ \hline
+\end{tabularx}
+\end{adjustbox}
+
+\begin{adjustbox}{center,nofloat=figure,vspace=\bigskipamount}
+\begin{tabularx}{\textwidth}{|c|Y|}
+\hline
+\textbf{Atrybut} & \textbf{Wykres} \\ \hline
+Speed            &
+\begin{minipage}{\linewidth}
+  \vspace{1.5mm}
+  \centering
+  \includegraphics[width=\linewidth]{1_distribution/Speed_hist.png}
+\end{minipage}                 \\ \hline
+\end{tabularx}
+\end{adjustbox}
+
+\subsubsection{Wnioski dotyczące rozkładów wartości atrybutów}
+\begin{itemize}
+    \item Atrybut \mintinline{text}{Legendary} jest silnie niezbalansowany — tylko 65 spośród 800 pokemonów (8,1\%) jest legendarnych. Może to mieć wpływ na dalsze modelowanie.
+    \item Rozkład atrybutu \mintinline{text}{Generation} jest w dużym przybliżeniu równomierny — każda generacja ma podobną liczbę przynależących do niej pokemonów.
+    \item Przynależność do wyższej generacji nie wydaje się mieć istotnego wpływu na rozkład statystyk pokemonów — rozkłady statystyk nie wykazują przesunięcia w kierunku wyższych wartości ani zwiększonej liczby obserwacji ekstremalnych.
+    \item Atrybuty \mintinline{text}{Type 1} i \mintinline{text}{Type 2} przyjmują po 18 unikalnych wartości (nie wliczając w to wartości brakujących). W przypadku \mintinline{text}{Type 1} najczęstszy jest typ Water (112 pokemonów), jednak różnice między typami nie są dramatyczne. Dla \mintinline{text}{Type 2} dominuje Flying (97 pokemonów), przy czym blisko połowa pokemonów nie ma przypisanego drugiego typu ataku.
+    \item Rozkłady atrybutów numerycznych (HP, Attack, Defense, Sp. Atk, Sp. Def, Speed) są prawoskośne — większość pokemonów ma niskie lub średnie wartości statystyk, natomiast nieliczne pokemony osiągają wartości ekstremalne, tworząc długi prawy ogon rozkładów.
+\end{itemize}
+
+\subsubsection*{Dodatkowe potwierdzenie prawoskośności rozkładów statystyk}
+
+TODO!!!!!!!!!!!
+
+%testy statystyczne - dodatkowe potwierdzenie prawo skosnosci?? (STATISTICAL TEST FOR PRAWOSKOŚNOŚĆ??????)
+% check srednia > mediana > dominata ?
+% sprawdzenie ze nie jest to rozklad normalny???
+
+% https://pogotowiestatystyczne.pl/slowniki/skosnosc/
+% https://pogotowiestatystyczne.pl/slowniki/test-shapiro-wilka/
+
 \subsubsection{Korelacja pomiędzy wartościami atrybutów}
+W celu zbadania, które statystyki mają największy wpływ na wynik walk, obliczono macierz korelacji (Pearsona) pomiędzy atrybutami numerycznymi zbioru \mintinline{text}{pokemon} a współczynnikiem zwycięstw (\textit{Win Rate}) wyznaczonym na podstawie zbioru \mintinline{text}{combats}. Poniżej przedstawiono wyniki w formie macierzy korelacji oraz wykresu słupkowego.
+
+\renewcommand{\figurename}{Rys}
+\setcounter{figure}{0}
+
+\begin{adjustbox}{center,caption={Macierz korelacji statystyk pokemonów ze współczynnikiem zwycięstw},label={rysunek 1},nofloat=figure,vspace=\bigskipamount}
+\includegraphics[width=0.95\textwidth]{2_correlations/korelacja_heatmap.png}
+\end{adjustbox}
 
 
-\subsection{Uwagi na temat jakości danych}
-\subsubsection{Dane brakujące}
-\subsubsection{Punkty oddalone}
-\subsubsection{Dane niespójne}
-\subsubsection{Dane niezrozumiałe}
+\begin{adjustbox}{center,caption={Korelacja poszczególnych statystyk ze współczynnikiem zwycięstw},label={rysunek 2},nofloat=figure,vspace=\bigskipamount}
+\includegraphics[width=0.95\textwidth]{2_correlations/korelacja_winrate.png}
+\end{adjustbox}
+
+
+\subsubsection{Wnioski dotyczące korelacji}
+\begin{itemize}
+    \item Najsilniejszą korelację z \textit{Win Rate} wykazuje atrybut \mintinline{text}{Speed} (wartość korelacji $\approx 0.94$). Oznacza to, że szybkość pokemona jest decydującym czynnikiem wpływającym na wynik walki w tym zbiorze danych. Jest to zgodne z mechaniką gry, w której pokemon o wyższej prędkości atakuje jako pierwszy, co daje mu przewagę.
+    \item Na kolejnych miejscach pod względem korelacji z \textit{Win Rate} znalazły się: \mintinline{text}{Attack} ($\approx 0.50$) oraz \mintinline{text}{Sp. Atk} ($\approx 0.48$). Oba atrybuty bezpośrednio wpływają na zadawane obrażenia, co tłumaczy ich istotny związek z wynikiem walki.
+    \item \mintinline{text}{Legendary} wykazuje korelację $\approx 0.32$ z \textit{Win Rate}. Pokémony legendarne mają generalnie wyższe statystyki, stąd ich wyższa skuteczność w walkach.
+    \item Atrybuty \mintinline{text}{Defense} ($\approx 0.11$) i \mintinline{text}{Generation} ($\approx 0.02$) mają najniższą korelację z \textit{Win Rate}, co sugeruje, że obrona i generacja pokemona mają stosunkowo małe znaczenie dla predykcji wyniku walki w tym zbiorze.
+    \item Macierz korelacji między samymi statystykami wskazuje na umiarkowane związki pomiędzy \mintinline{text}{Defense} i \mintinline{text}{Sp. Def} ($\approx 0.51$) oraz pomiędzy \mintinline{text}{Sp. Atk} i \mintinline{text}{Sp. Def} ($\approx 0.51$), co może świadczyć o pewnej redundancji tych atrybutów.
+\end{itemize}
+
+
+\subsection{Wyniki analizy danych a cel eksploracji}
+
+Na podstawie przeprowadzonej analizy eksploracyjnej można ocenić, że ustalony przez nas cel eksploracji jest możliwy do osiągnięcia.\\\\ \noindent Atrybut \mintinline{text}{Speed} dominuje jako predyktor wyniku walki. Pozostałe atrybuty ofensywne (Attack, Sp. Atk) również wnoszą istotną informację. Dane są dobrej jakości — brak brakujących wartości w atrybutach numerycznych, jedynie atrybut \mintinline{text}{Type 2} wymaga obsługi wartości pustych. Punkty oddalone nie stanowią błędów i zostają zachowane, gdyż odzwierciedlają charakterystykę silniejszych pokemonów.
 
 \section{Podsumowanie}
 
+TODO!!!!!!!!!!!
 
 % ---------------------------------------------------------------------------------
 % SOURCES -------------------------------------------------------------------------
@@ -133,7 +458,27 @@ Zbiór danych zawiera ....
 \section*{Wykaz Literatury}
 \renewcommand{\labelenumi}{[\arabic{enumi}]}
 \begin{enumerate}
-\item 
+
+\item \url{https://tjzhifei.github.io/links/DM3.pdf} CITE AS A BOOK AND NOT LINK
+
+\item materialy wykladowe ED 2025/26
+
+\item \url{https://en.wikipedia.org/wiki/Accuracy_and_precision#In_binary_classification}
+
+\item \url{https://en.wikipedia.org/wiki/F-score}
+
+\item \url{https://en.wikipedia.org/wiki/Precision_and_recall}
+
+
+
+% ---------------------------------------------------------------------------------
+% ALL the sources we use ex. for understanding how to use the methods in 3.2 or how we chose approach to missing data (essentialy - if we use the knowledge on anything (wikipedia and lecture powerpoints do count) put in in here) etc
+% its especially important since we ALL NEED TO TALK WHEN PRESENTING IT, so knowing exaclty how some conclusions were reached will be way easier like this (and so will formulating the final conclusions etc)
+% (if you dont know how to cite it properly just put in the link and access date for now)
+% ---------------------------------------------------------------------------------
+
+% source to use not to cite (DELETE BEFORE SUBMITTING!!!)
+\item \url{https://www.nceas.ucsb.edu/sites/default/files/2022-06/Colorblind%20Safe%20Color%20Schemes.pdf}
 
 \end{enumerate}
 
