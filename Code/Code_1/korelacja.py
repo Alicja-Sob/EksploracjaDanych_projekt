@@ -3,11 +3,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-OUTPUT_DIR = '../Report_1/2_correlations'
+OUTPUT_DIR = '../../Reports/Report_1/2_correlations'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-pokemon = pd.read_csv('../Dataset/pokemon.csv')
-combats = pd.read_csv('../Dataset/combats.csv')
+pokemon = pd.read_csv('../../Dataset/pokemon.csv')
+combats = pd.read_csv('../../Dataset/combats.csv')
 
 first_counts = combats['First_pokemon'].value_counts()
 second_counts = combats['Second_pokemon'].value_counts()

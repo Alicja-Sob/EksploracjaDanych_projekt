@@ -23,7 +23,7 @@ def barplots(csv_file, attribute):
 
     plt.tight_layout()
    # plt.show()
-    folder = "../Report_1/1_distribution"
+    folder = "../../Reports/Report_1/1_distribution"
     os.makedirs(folder, exist_ok=True)
     plt.savefig(f"{folder}/{attribute.replace(" ", "_")}_dist.png")
 
@@ -38,7 +38,7 @@ def histograms(csv_file, attribute):
     plt.ylabel("Liczba przykładów")
     plt.tight_layout()
   #  plt.show()
-    folder = "../Report_1/1_distribution"
+    folder = "../../Reports/Report_1/1_distribution"
     os.makedirs(folder, exist_ok=True)
     plt.savefig(f"{folder}/{attribute.replace(" ", "_").replace(".","")}_hist.png")
 
@@ -53,7 +53,7 @@ def box_plot(csv_file, attribute):
     plt.ylabel("Wartość atrybutu")
     plt.tight_layout()
    # plt.show()
-    folder = "../Report_1/3_dataQualityCharts"
+    folder = "../../Reports/Report_1/3_dataQualityCharts"
     os.makedirs(folder, exist_ok=True)
     plt.savefig(f"{folder}/{attribute.replace(" ", "_").replace(".", "")}_box.png")
 
@@ -148,7 +148,7 @@ def attack_type_vs_generation(csv_file):
 
     plt.tight_layout()
 
-    folder = "../Report_1/4_other"
+    folder = "../../Reports/Report_1/4_other"
     os.makedirs(folder, exist_ok=True)
     plt.savefig(f"{folder}/type_distribution_by_generation.png")
 
@@ -171,7 +171,7 @@ def type2_missing_vs_generation(csv_file):
 
     plt.tight_layout()
     #plt.show()
-    folder = "../Report_1/4_other"
+    folder = "../../Reports/Report_1/4_other"
     os.makedirs(folder, exist_ok=True)
     plt.savefig(f"{folder}/missing_t2_per_gen.png")
 
@@ -181,9 +181,9 @@ def category_analysis(csv_file):
 
 
 def main():
-    combats_csv = pd.read_csv('../Dataset/combats.csv')
-    pokemon_csv = pd.read_csv('../Dataset/pokemon.csv').fillna("None")
-    tests_csv = pd.read_csv('../Dataset/tests.csv')
+    combats_csv = pd.read_csv('../../Dataset/combats.csv')
+    pokemon_csv = pd.read_csv('../../Dataset/pokemon.csv').fillna("None")
+    tests_csv = pd.read_csv('../../Dataset/tests.csv')
 
 #    distribution_generation(pokemon_csv)
  #   box_plots_generation(pokemon_csv)
