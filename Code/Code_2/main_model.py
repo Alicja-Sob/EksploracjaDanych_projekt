@@ -200,16 +200,12 @@ def macierz_pomylek(X_test, y_test, model):
 
     accuracy = (tp + tn) / (tp + tn + fp + fn)
 
-    print("\n============================================================")
-    print("              Wyniki modelu RIPPER")
-    print("============================================================")
     print(f"Positive class: {pos_label}")
     print("-" * 65)
     print(f"Precision: {precision:.4f}")
     print(f"Recall:    {recall:.4f}")
     print(f"F1-score:  {f1:.4f}")
     print(f"Accuracy:  {accuracy:.4f}")
-    print("============================================================")
 
     plt.figure()
     sns.heatmap(cm_df, annot=True, fmt="d", cmap="Blues")
@@ -224,6 +220,166 @@ def macierz_pomylek(X_test, y_test, model):
     return cm_df
 
 
+def experiment_attribute_subsets(dataset):
+    best_params = {
+        "max_rules": 50,
+        "max_rule_conds": 2,
+        "prune_size": 0.1
+    }
+
+    subsets = {
+        "Model główny": [
+            "HP_diff", "Attack_diff", "Defense_diff", "SpAtk_diff",
+            "SpDef_diff", "Speed_diff", "Generation_diff",
+            "Legendary_rel", "Type1_same", "Type2_same",
+            "First_has_type2", "Second_has_type2"
+        ],
+
+        "Speed + Attack": ["Speed_diff", "Attack_diff"],
+
+        "Numeryczne": [
+            "HP_diff", "Attack_diff", "Defense_diff",
+            "SpAtk_diff", "SpDef_diff", "Speed_diff",
+            "Generation_diff"
+        ],
+
+        "Nominalne": [
+            "Legendary_rel", "Type1_same", "Type2_same",
+            "First_has_type2", "Second_has_type2"
+        ],
+
+        "Top 5": [
+            "Speed_diff", "Attack_diff", "SpAtk_diff",
+            "Legendary_rel", "SpDef_diff"
+        ]
+    }
+
+    kf = KFold(n_splits=10, shuffle=True, random_state=0)
+
+    results = []
+
+    for subset_name, feature_cols in subsets.items():
+        print(f"\nSubset: {subset_name}")
+
+        X = dataset[feature_cols]
+        y = dataset["Did_1st_win"]
+
+        accs = []
+        f1s = []
+
+        for train_idx, test_idx in kf.split(X):
+            X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+            y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+
+            model = train_final_model(X_train, y_train, best_params)
+
+            y_pred = model.predict(X_test)
+
+            accs.append(accuracy_score(y_test, y_pred))
+            f1s.append(f1_score(y_test, y_pred))
+
+        acc_mean, acc_std = np.mean(accs), np.std(accs)
+        f1_mean, f1_std = np.mean(f1s), np.std(f1s)
+
+        results.append([
+            subset_name,
+            acc_mean, acc_std,
+            f1_mean, f1_std
+        ])
+
+        print(f"Accuracy = {acc_mean:.4f} ± {acc_std:.4f}")
+        print(f"F1-score = {f1_mean:.4f} ± {f1_std:.4f}")
+
+    results_df = pd.DataFrame(
+        results,
+        columns=["Subset", "Accuracy_mean", "Accuracy_std", "F1_mean", "F1_std"]
+    )
+
+    print("\n================ RESULTS ================\n")
+    print(results_df.to_string(index=False))
+
+    return results_df
+
+
+def experiment_discretisation_methods(dataset):
+    best_params = {
+        "max_rules": 50,
+        "max_rule_conds": 2,
+        "prune_size": 0.1
+    }
+
+    feature_cols = [
+        "HP_diff", "Attack_diff", "Defense_diff",
+        "SpAtk_diff", "SpDef_diff", "Speed_diff",
+        "Generation_diff", "Legendary_rel", "Type1_same",
+        "Type2_same", "First_has_type2", "Second_has_type2"
+    ]
+
+    methods = ["mean", "median", "zero"]
+    kf = KFold(n_splits=10, shuffle=True, random_state=0)
+
+    def discretize(X, method):
+        X = X.copy()
+
+        for col in [
+            "HP_diff", "Attack_diff", "Defense_diff",
+            "SpAtk_diff", "SpDef_diff", "Speed_diff",
+            "Generation_diff"
+        ]:
+            if method == "mean":
+                thr = X[col].mean()
+                X[col] = (X[col] > thr).astype(int)
+            elif method == "median":
+                thr = X[col].median()
+                X[col] = (X[col] > thr).astype(int)
+            elif method == "zero":
+                X[col] = (X[col] > 0).astype(int)
+
+        return X
+
+    results = []
+
+    y = dataset["Did_1st_win"]
+
+    for method in methods:
+        print(f"\nMethod: {method}")
+        accs, f1s = [], []
+
+        for train_idx, test_idx in kf.split(dataset):
+            X_train = dataset.iloc[train_idx][feature_cols]
+            X_test = dataset.iloc[test_idx][feature_cols]
+
+            y_train = y.iloc[train_idx]
+            y_test = y.iloc[test_idx]
+
+            X_train = discretize(X_train, method)
+            X_test = discretize(X_test, method)
+
+            model = get_a_model(
+                best_params["max_rules"],
+                best_params["max_rule_conds"],
+                best_params["prune_size"]
+            )
+
+            model.fit(X_train, y_train)
+            preds = model.predict(X_test)
+
+            accs.append(accuracy_score(y_test, preds))
+            f1s.append(f1_score(y_test, preds))
+
+        print (f"Accuracy = {np.mean(accs):.4f}")
+        print (f"ACC-std = {np.std(accs):.4f}")
+        print (f"F1-score = {np.mean(f1s):.4f}")
+        print (f"F1-std = {np.std(f1s):.4f}")
+        results.append({
+            "method": method,
+            "accuracy_mean": np.mean(accs),
+            "accuracy_std": np.std(accs),
+            "f1_mean": np.mean(f1s),
+            "f1_std": np.std(f1s)
+        })
+
+    return pd.DataFrame(results)
 
 
 def main():
@@ -231,31 +387,9 @@ def main():
     pokemon_csv = pd.read_csv('../../Dataset/pokemon.csv').fillna("None")
 
     preped_data_1 = prepare_the_data(pokemon_csv, combats_csv, "main_training_dataset")
-
-    x, y = get_X_y(preped_data_1)
-
-    best_params = {"max_rules": 50, "max_rule_conds": 2, "prune_size": 0.1}
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        x,
-        y,
-        test_size=0.2,
-        random_state=0,
-        stratify=y
-    )
-
-    model = train_final_model(X_train, y_train, best_params)
-
-    macierz_pomylek(X_test, y_test, model)
-
-    y_pred = model.predict(X_test)
-
-    acc = accuracy_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
-
-    print(f"\nAccuracy = {acc:.4f} ({acc * 100:.2f}%)")
-    print(f"F1-score = {f1:.4f} ({f1 * 100:.2f}%)")
-
+#    experiment_attribute_subsets(preped_data_1)
+    results_df = experiment_discretisation_methods(preped_data_1)
+    print(results_df)
 
 if __name__ == "__main__":
     main()
