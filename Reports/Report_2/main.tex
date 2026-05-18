@@ -1,0 +1,172 @@
+\documentclass[12pt, a4paper]{report}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx,wrapfig, lipsum}
+\usepackage{a4wide}
+\usepackage{titlesec}
+\usepackage[T1]{fontenc}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage[cache=false]{minted}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xurl}
+\usepackage{chngcntr}
+\usepackage{tabularx}
+
+\counterwithin{figure}{section}
+\makeatletter
+\renewcommand{\thefigure}{\thesection\arabic{figure}}
+
+\usemintedstyle{autumn}
+
+\newcommand {\R}{\mathbb{R}}
+\newcommand {\C}{\mathbb{C}}
+\newcommand {\N}{\mathbb{N}}
+
+\geometry{
+    left = 25mm,
+    right = 25mm,
+    top = 25mm,
+    bottom = 30mm
+}
+
+\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.}
+
+\titleformat*{\section}{\LARGE\bfseries}
+\renewcommand{\figurename}{Rys}
+\setlength{\intextsep}{2cm}
+\setlength{\textfloatsep}{0cm}
+
+\begin{document}
+\title{
+  \Huge \textbf{Eksploracja Danych - projekt}
+  \\ \vspace{5pt}
+  \LARGE  Etap 2: Przygotowanie Danych i Modelowanie
+  \\ \vspace{10pt}
+  \Large  Pokémon - Weedle's Cave
+}
+
+\author{Alicja Sobiech, 188861\\
+Nikolai Lavrinov, 201302\\
+Maciej Łukasiewicz, 197865}
+
+
+\maketitle
+
+% ----------------------------------- SPIS TRESCI ----------------------------------
+
+\tableofcontents
+
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\renewcommand{\arraystretch}{1.2}
+
+% ---------------------------------------------------------------------------------
+% PAPER ITSELF --------------------------------------------------------------------
+% ---------------------------------------------------------------------------------
+
+\newpage
+\addcontentsline{toc}{part}{Sprawozdanie}
+
+% okreslenie celu eksploracji i kryteriow sukcesu
+\section{Wprowadzenie}
+
+\subsection{Cel eksploracji}
+
+Celem eksploracji jest budowa modelu pozwalającego na predykcję wyników walk pokemonów na podstawie przypisanym im statystyk. Docelowo rozwiązywanym problemem będzie klasyfikacja binarna. Dodatkowym celem jest określenie, które statystyki mają największy wpływ na rezultat pojedynków\\\\
+\noindent
+Sukces zostanie osiągnięty, jeżeli model uzyska dokładność [ang. \textit{accuracy}] na poziomie \(80\%\), a wartość miary F1-score na poziomie co najmniej \(0.75\).
+
+\subsection{Zbiór danych}
+Zbiór danych składa się z trzech zestawów danych charakteryzujących pokemony i rezultaty walk między nimi. Charakterystyka Pokémonów zebrana została z samej gry, ale rezultaty walk zostały wygenerowane w sposób nie biorący pod uwagę niektórych elementów prawdziwej gry.
+
+\subsubsection*{Charakterystyka zbioru danych}
+\begin{itemize}
+    \item \textbf{Pochodzenie}\\
+    \url{https://www.kaggle.com/datasets/terminus7/pokemon-challenge}
+
+    \item \textbf{Format}\\.csv
+
+    \item \textbf{Zawarte zbiory danych}
+    \begin{itemize}
+        \item Rozstrzygnięte walki - \mintinline{text}{combats.csv} (50 000 przykładów)
+        \item Pokémony - \mintinline{text}{pokemon.csv} (800 przykładów)
+        \item Zbiór testowy - \mintinline{text}{tests.csv} (10 000 przykładów)
+    \end{itemize}
+
+\end{itemize}
+
+\section{Dalsze postępowanie}
+
+\subsection{Dobór działania eksploracji}
+\subsection{Dobór algorytmu eksploracji}
+DecisionTree + Reguły decyzyjne
+
+\subsection{Dobór metody testowania wyników}
+
+\section{Przygotowanie danych}
+
+\subsection{Dane brakujące}
+
+
+
+\subsection{Dane do ujednolicenia}
+\subsection{Dane do uzupełnienia} % Podzbiór danych
+\subsection{Dane do konwersji} % nominalne <-> numeryczne
+
+% possibility of needing to change the attack types to numbers, depends on model ig?
+
+\section{Tworzenie modelu}
+
+% In example report all of this is one 'wall' of text and images so these subsections may need to be shortened later on, but we gotta do the code first this time (this is applicable to the whole report tbh)
+
+\subsection{Dobranie parametrów pracy}
+
+\subsection{Analiza Modelu}
+
+\subsection{Wykonanie algorytmu}
+
+\subsection{Ocena Wyników}
+
+\section{Eksperymenty z modelem i zbiorem danych}
+
+\subsection{Eksperyment no.1 itd}
+
+\section{Podsumowanie}
+
+\subsection{Przegląd wykonanego procesu}
+
+\subsection{Pokrycie celów}
+
+
+% ---------------------------------------------------------------------------------
+% ZRODLA --------------------------------------------------------------------------
+% ---------------------------------------------------------------------------------
+\newpage
+\addcontentsline{toc}{part}{Źródła}
+\section*{Wykaz Literatury}
+\renewcommand{\labelenumi}{[\arabic{enumi}]}
+\begin{enumerate}
+
+\item
+
+
+%\item Witten I.H., Frank E., Hall M.A.: Input: Concepts, Instances, and Attributes, W: \textit{Data Mining. Practical Machine Learning Tools and Techniques}, Wydanie III, Burlington, USA: Morgan Kaufmann (Elsevier), 2011, s.39-60, ISBN 978-0-12-374856-0.
+
+%\item Waloszek W., Zawadzka T.: \textit{Podstawowe Zagadnienia i Terminy} [materiały wykładowe], Gdańsk (Politechnika Gdańska), 2026
+
+% source to use not to cite
+%\url{https://www.nceas.ucsb.edu/sites/default/files/2022-06/Colorblind%20Safe%20Color%20Schemes.pdf}
+
+\end{enumerate}
+
+
+\end{document}
