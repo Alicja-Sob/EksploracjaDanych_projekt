@@ -200,16 +200,12 @@ def macierz_pomylek(X_test, y_test, model):
 
     accuracy = (tp + tn) / (tp + tn + fp + fn)
 
-    print("\n============================================================")
-    print("              Wyniki modelu RIPPER")
-    print("============================================================")
     print(f"Positive class: {pos_label}")
     print("-" * 65)
     print(f"Precision: {precision:.4f}")
     print(f"Recall:    {recall:.4f}")
     print(f"F1-score:  {f1:.4f}")
     print(f"Accuracy:  {accuracy:.4f}")
-    print("============================================================")
 
     plt.figure()
     sns.heatmap(cm_df, annot=True, fmt="d", cmap="Blues")
