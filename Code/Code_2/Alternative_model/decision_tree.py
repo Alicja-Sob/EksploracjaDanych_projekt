@@ -101,8 +101,8 @@ def plot_decision_tree(tree_model, feature_names):
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    pokemon_file = '../Dataset/pokemon.csv'
-    combats_file = '../Dataset/combats.csv'
+    pokemon_file = '../../../Dataset/pokemon.csv'
+    combats_file = '../../../Dataset/combats.csv'
     
     if not os.path.exists(pokemon_file) or not os.path.exists(combats_file):
         print("Nie znaleziono plików w folderze Dataset!")
